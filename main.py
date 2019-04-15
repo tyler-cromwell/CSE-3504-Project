@@ -5,6 +5,7 @@ import math
 import numpy
 
 
+# Transition probabilities from i to j
 A = numpy.matrix([
     [0.00, 0.70, 0.15, 0.15, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00],
     [0.00, 0.00, 0.70, 0.00, 0.30, 0.00, 0.00, 0.00, 0.00, 0.00],
@@ -19,11 +20,27 @@ A = numpy.matrix([
 ])
 
 
+# Time (seconds) per visit
+T = numpy.array([
+    4.0,
+    5.0,
+    2.0,
+    6.0,
+    1.0,
+    2.0,
+    3.0,
+    4.0,
+    2.0,
+    8.0
+])
+
+
 class Axis(enum.Enum):
     ROW = 0
     COLUMN = 1
 
 
+# Generate Identity Matrix of size nxn
 def I(n=1):
     I = []
     index = 0
@@ -38,9 +55,10 @@ def I(n=1):
 
 
 if __name__ == '__main__':
-    print(type(A), A.shape)
-    print(A)
-
+    ########################################
+    # Part B
+    # TODO: Account for Absorbing States!
+    ########################################
     # Remove absorbing state A_24
     B = numpy.delete(
         numpy.delete(
@@ -51,8 +69,6 @@ if __name__ == '__main__':
         4,
         Axis.COLUMN.value
     )
-    print(type(B), B.shape)
-    print(B)
 
     # Remove absorbing state B_88
     C = numpy.delete(
@@ -64,8 +80,24 @@ if __name__ == '__main__':
         8,
         Axis.COLUMN.value
     )
-    print(type(C), C.shape)
-    print(C)
 
+    # Compute average number of visits
     M = numpy.linalg.inv(I(8) - C)
+    print('Average number of visits to each module:')
     print(M)
+    print()
+
+
+    ########################################
+    # Part C
+    ########################################
+    U = numpy.delete(T, 2)
+    U = numpy.delete(U, 8)
+    R = M.dot(U).A1
+
+    total = T[2] + T[9]
+    for r in R: total += r
+
+    print('Average completion time:')
+    print('{:.1f}'.format(total), 'seconds (approximately)')
+    print()
