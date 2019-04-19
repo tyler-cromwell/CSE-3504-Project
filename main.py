@@ -21,7 +21,7 @@ A = numpy.matrix([
 
 
 # Time (seconds) per visit
-T = numpy.array([
+T = numpy.matrix([
     4.0,
     5.0,
     2.0,
@@ -59,9 +59,10 @@ def iv(n=1):
 
 
 if __name__ == '__main__':
+    numpy.set_printoptions(precision=5)
+
     ########################################
     # Part B
-    # TODO: Account for Absorbing States!
     ########################################
     # Remove absorbing state A_99
     B = numpy.delete(
@@ -84,19 +85,26 @@ if __name__ == '__main__':
     ########################################
     # Part C
     ########################################
+    # Multiply time vector with the first row of the fundamental matrix
     U = numpy.delete(T, 9)
-    R = C.dot(U).A1
-
-    # Count states that transition to the absorbing state
-    n = -1
-    for row in A.A:
-        if row[9] > 0:
-            n += 1
+    R = (C[0, :] * U.T).A1
 
     # Compute total average completion time
-    total = T[9] * n
-    for r in R: total += r
+    total = T.A1[9] + R[0]
 
     print('Average completion time:')
-    print('{:.1f}'.format(total), 'seconds (approximately)')
+    print('{:.2f} seconds'.format(total))
+    print()
+
+
+    ########################################
+    # Part D
+    ########################################
+    l1 = C[0, :].A1
+    l2 = U.T.A1
+
+    print('Execution time per component:')
+    for i in range(len(l1)):
+        print('Component {:}: {:.2f} seconds'.format(i+1, l1[i] * l2[i]))
+    print('Component {:}: {:.2f} seconds'.format(10, T.A1[9]))
     print()
