@@ -54,48 +54,47 @@ def I(n=1):
     return numpy.matrix(I)
 
 
+def iv(n=1):
+    return numpy.matrix([1] * n)
+
+
 if __name__ == '__main__':
     ########################################
     # Part B
     # TODO: Account for Absorbing States!
     ########################################
-    # Remove absorbing state A_24
+    # Remove absorbing state A_99
     B = numpy.delete(
         numpy.delete(
             A,
-            2,
+            9,
             Axis.ROW.value
         ),
-        4,
-        Axis.COLUMN.value
-    )
-
-    # Remove absorbing state B_88
-    C = numpy.delete(
-        numpy.delete(
-            B,
-            8,
-            Axis.ROW.value
-        ),
-        8,
+        9,
         Axis.COLUMN.value
     )
 
     # Compute average number of visits
-    M = numpy.linalg.inv(I(8) - C)
+    C = numpy.linalg.inv(I(int(math.sqrt(B.size))) - B)
     print('Average number of visits to each module:')
-    print(M)
+    print(C)
     print()
 
 
     ########################################
     # Part C
     ########################################
-    U = numpy.delete(T, 2)
-    U = numpy.delete(U, 8)
-    R = M.dot(U).A1
+    U = numpy.delete(T, 9)
+    R = C.dot(U).A1
 
-    total = T[2] + T[9]
+    # Count states that transition to the absorbing state
+    n = -1
+    for row in A.A:
+        if row[9] > 0:
+            n += 1
+
+    # Compute total average completion time
+    total = T[9] * n
     for r in R: total += r
 
     print('Average completion time:')
