@@ -58,16 +58,10 @@ def iv(n=1):
     return numpy.matrix([1] * n)
 
 
-if __name__ == '__main__':
-    numpy.set_printoptions(precision=5)
-
-    ########################################
-    # Part B
-    ########################################
-    # Remove absorbing state A_99
+def compute_fundamental_matrix(matrix):
     B = numpy.delete(
         numpy.delete(
-            A,
+            matrix,
             9,
             Axis.ROW.value
         ),
@@ -76,23 +70,44 @@ if __name__ == '__main__':
     )
 
     # Compute average number of visits
-    C = numpy.linalg.inv(I(int(math.sqrt(B.size))) - B)
+    return numpy.linalg.inv(I(int(math.sqrt(B.size))) - B)
+
+
+def mean_execution_time(C, T):
+    # Multiply time vector with the first row of the fundamental matrix
+    U = numpy.delete(T, 9)
+    R = (C[0, :] * U.T).A1
+
+    # Compute total average completion time
+    return T.A1[9] + R[0]
+
+
+if __name__ == '__main__':
+    numpy.set_printoptions(precision=5)
+
+    ########################################
+    # Question 1
+    ########################################
+
+    ########################################
+    # Part B
+    ########################################
+    # Remove absorbing state A_99
+    C = compute_fundamental_matrix(A)
+    print('########################################')
+    print('Part B')
     print('Average number of visits to each module:')
-    print(C)
+    print(C.A[0])
     print()
 
 
     ########################################
     # Part C
     ########################################
-    # Multiply time vector with the first row of the fundamental matrix
-    U = numpy.delete(T, 9)
-    R = (C[0, :] * U.T).A1
-
-    # Compute total average completion time
-    total = T.A1[9] + R[0]
-
-    print('Average completion time:')
+    total = mean_execution_time(C, T)
+    print('########################################')
+    print('Part C')
+    print('Mean execution time:')
     print('{:.2f} seconds'.format(total))
     print()
 
@@ -100,11 +115,71 @@ if __name__ == '__main__':
     ########################################
     # Part D
     ########################################
+    U = numpy.delete(T, 9)
     l1 = C[0, :].A1
     l2 = U.T.A1
 
+    print('########################################')
+    print('Part D')
     print('Execution time per component:')
     for i in range(len(l1)):
         print('Component {:}: {:.2f} seconds'.format(i+1, l1[i] * l2[i]))
     print('Component {:}: {:.2f} seconds'.format(10, T.A1[9]))
     print()
+
+
+    ########################################
+    # Part E
+    ########################################
+    steps = [(i/20) for i in list(range(2, 19, 1))]
+
+    print('########################################')
+    print('Part E')
+
+    print('P_5,7')
+    E = A.copy()
+    for p in steps:
+        E.A[4][6] = p
+        E.A[4][7] = q = 1 - p
+        C = compute_fundamental_matrix(E)
+        total = mean_execution_time(C, T)
+        if p == A.A[4][6]:
+            print('Result (P_5,7, P_5,8, mean): ({:.2f}, {:.2f}, {:.2f} sec) *'.format(p, q, total))
+        else:
+            print('Result (P_5,7, P_5,8, mean): ({:.2f}, {:.2f}, {:.2f} sec)'.format(p, q, total))
+
+    print('P_7,2')
+    E = A.copy()
+    for p in steps:
+        E.A[6][1] = p
+        E.A[6][8] = q = 1 - p
+        C = compute_fundamental_matrix(E)
+        total = mean_execution_time(C, T)
+        if p == A.A[6][1]:
+            print('Result (P_7,2, P_7,9, mean): ({:.2f}, {:.2f}, {:.2f} sec) *'.format(p, q, total))
+        else:
+            print('Result (P_7,2, P_7,9, mean): ({:.2f}, {:.2f}, {:.2f} sec)'.format(p, q, total))
+
+    print('P_8,4')
+    E = A.copy()
+    for p in steps:
+        E.A[7][3] = p
+        E.A[7][9] = q = 1 - p
+        C = compute_fundamental_matrix(E)
+        total = mean_execution_time(C, T)
+        if p == A.A[7][3]:
+            print('Result (P_8,4, P_8,10, mean): ({:.2f}, {:.2f}, {:.2f} sec) *'.format(p, q, total))
+        else:
+            print('Result (P_8,4, P_8,10, mean): ({:.2f}, {:.2f}, {:.2f} sec)'.format(p, q, total))
+
+    print('P_9,8')
+    E = A.copy()
+    for p in steps:
+        E.A[8][7] = p
+        E.A[8][9] = q = 1 - p
+        C = compute_fundamental_matrix(E)
+        total = mean_execution_time(C, T)
+        if p == A.A[8][7]:
+            print('Result (P_9,8, P_9,10, mean): ({:.2f}, {:.2f}, {:.2f} sec) *'.format(p, q, total))
+        else:
+            print('Result (P_9,8, P_9,10, mean): ({:.2f}, {:.2f}, {:.2f} sec)'.format(p, q, total))
