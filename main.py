@@ -251,5 +251,17 @@ if __name__ == '__main__':
 
     print('########################################')
     print('Part A')
-    print(numpy.full((1, 10), 0.1) * B)
+    S = numpy.full((1, 10), 0.1) * B
+    print('Steady state probabilities:', S.A1)
+    print()
+
+    print('########################################')
+    print('Part B')
+
+    Z = [-1] * 10
+    for i in range(len(Z)):
+        Z[i] = 0.85 + 0.01*(i+1)
+    Z = numpy.matrix(Z)
+
+    print('Reliability: ', (Z * S.T).A1)
     print()
