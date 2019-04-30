@@ -59,7 +59,7 @@ def iv(n=1):
 
 
 def compute_fundamental_matrix(matrix):
-    B = numpy.delete(
+    Q = numpy.delete(
         numpy.delete(
             matrix,
             9,
@@ -70,7 +70,7 @@ def compute_fundamental_matrix(matrix):
     )
 
     # Compute average number of visits
-    return numpy.linalg.inv(I(int(math.sqrt(B.size))) - B)
+    return numpy.linalg.inv(I(int(math.sqrt(Q.size))) - Q)
 
 
 def mean_execution_time(C, T):
@@ -88,23 +88,29 @@ if __name__ == '__main__':
     ########################################
     # Question 1
     ########################################
+    print('########################################')
+    print('########################################')
+    print('Question 1')
+    print('########################################')
+    print('########################################')
+    print()
 
     ########################################
     # Part B
     ########################################
     # Remove absorbing state A_99
-    C = compute_fundamental_matrix(A)
+    M = compute_fundamental_matrix(A)
     print('########################################')
     print('Part B')
     print('Average number of visits to each module:')
-    print(C.A[0])
+    print(M.A[0])
     print()
 
 
     ########################################
     # Part C
     ########################################
-    total = mean_execution_time(C, T)
+    total = mean_execution_time(M, T)
     print('########################################')
     print('Part C')
     print('Mean execution time:')
@@ -116,7 +122,7 @@ if __name__ == '__main__':
     # Part D
     ########################################
     U = numpy.delete(T, 9)
-    l1 = C[0, :].A1
+    l1 = M[0, :].A1
     l2 = U.T.A1
 
     print('########################################')
@@ -141,8 +147,8 @@ if __name__ == '__main__':
     for p in steps:
         E.A[4][6] = p
         E.A[4][7] = q = 1 - p
-        C = compute_fundamental_matrix(E)
-        total = mean_execution_time(C, T)
+        M = compute_fundamental_matrix(E)
+        total = mean_execution_time(M, T)
         if p == A.A[4][6]:
             print('Result (P_5,7, P_5,8, mean): ({:.2f}, {:.2f}, {:.2f} sec) (original values)'.format(p, q, total))
         else:
@@ -153,8 +159,8 @@ if __name__ == '__main__':
     for p in steps:
         E.A[6][1] = p
         E.A[6][8] = q = 1 - p
-        C = compute_fundamental_matrix(E)
-        total = mean_execution_time(C, T)
+        M = compute_fundamental_matrix(E)
+        total = mean_execution_time(M, T)
         if p == A.A[6][1]:
             print('Result (P_7,2, P_7,9, mean): ({:.2f}, {:.2f}, {:.2f} sec) (original values)'.format(p, q, total))
         else:
@@ -165,8 +171,8 @@ if __name__ == '__main__':
     for p in steps:
         E.A[7][3] = p
         E.A[7][9] = q = 1 - p
-        C = compute_fundamental_matrix(E)
-        total = mean_execution_time(C, T)
+        M = compute_fundamental_matrix(E)
+        total = mean_execution_time(M, T)
         if p == A.A[7][3]:
             print('Result (P_8,4, P_8,10, mean): ({:.2f}, {:.2f}, {:.2f} sec) (original values)'.format(p, q, total))
         else:
@@ -177,8 +183,8 @@ if __name__ == '__main__':
     for p in steps:
         E.A[8][7] = p
         E.A[8][9] = q = 1 - p
-        C = compute_fundamental_matrix(E)
-        total = mean_execution_time(C, T)
+        M = compute_fundamental_matrix(E)
+        total = mean_execution_time(M, T)
         if p == A.A[8][7]:
             print('Result (P_9,8, P_9,10, mean): ({:.2f}, {:.2f}, {:.2f} sec) (original values)'.format(p, q, total))
         else:
@@ -198,7 +204,7 @@ if __name__ == '__main__':
     index = -1
     widest = 0
 
-    print('Default:', T, '{:.2f} sec'.format(mean_execution_time(C, T)))
+    print('Default:', T, '{:.2f} sec'.format(mean_execution_time(M, T)))
     print()
 
     for i in range(len(X.A1)):
@@ -208,8 +214,8 @@ if __name__ == '__main__':
         X.A1[i] = X.A1[i] * 0.9
         Y.A1[i] = Y.A1[i] * 1.1
 
-        lower = mean_execution_time(C, X)
-        upper = mean_execution_time(C, Y)
+        lower = mean_execution_time(M, X)
+        upper = mean_execution_time(M, Y)
         diff = upper - lower
 
         if diff >= widest:
@@ -225,3 +231,25 @@ if __name__ == '__main__':
         Y.A1[i] = original
 
     print('Most sensitive: Module {:} with a {:.2f} sec difference'.format(index, widest))
+    print()
+
+
+    ########################################
+    # Question 2
+    ########################################
+    print('########################################')
+    print('########################################')
+    print('Question 2')
+    print('########################################')
+    print('########################################')
+    print()
+
+    B = A.copy()
+    B.A[9][1] = 0.5
+    B.A[9][2] = 0.5
+    B.A[9][9] = 0
+
+    print('########################################')
+    print('Part A')
+    print(numpy.full((1, 10), 0.1) * B)
+    print()
