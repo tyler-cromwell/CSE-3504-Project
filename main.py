@@ -108,7 +108,7 @@ if __name__ == '__main__':
     print('########################################')
     print('Part C')
     print('Mean execution time:')
-    print('{:.2f} seconds'.format(total))
+    print('{:.2f} sec'.format(total))
     print()
 
 
@@ -123,8 +123,8 @@ if __name__ == '__main__':
     print('Part D')
     print('Execution time per component:')
     for i in range(len(l1)):
-        print('Component {:}: {:.2f} seconds'.format(i+1, l1[i] * l2[i]))
-    print('Component {:}: {:.2f} seconds'.format(10, T.A1[9]))
+        print('Component {:}: {:.2f} sec'.format(i+1, l1[i] * l2[i]))
+    print('Component {:}: {:.2f} sec'.format(10, T.A1[9]))
     print()
 
 
@@ -144,7 +144,7 @@ if __name__ == '__main__':
         C = compute_fundamental_matrix(E)
         total = mean_execution_time(C, T)
         if p == A.A[4][6]:
-            print('Result (P_5,7, P_5,8, mean): ({:.2f}, {:.2f}, {:.2f} sec) *'.format(p, q, total))
+            print('Result (P_5,7, P_5,8, mean): ({:.2f}, {:.2f}, {:.2f} sec) (original values)'.format(p, q, total))
         else:
             print('Result (P_5,7, P_5,8, mean): ({:.2f}, {:.2f}, {:.2f} sec)'.format(p, q, total))
 
@@ -156,7 +156,7 @@ if __name__ == '__main__':
         C = compute_fundamental_matrix(E)
         total = mean_execution_time(C, T)
         if p == A.A[6][1]:
-            print('Result (P_7,2, P_7,9, mean): ({:.2f}, {:.2f}, {:.2f} sec) *'.format(p, q, total))
+            print('Result (P_7,2, P_7,9, mean): ({:.2f}, {:.2f}, {:.2f} sec) (original values)'.format(p, q, total))
         else:
             print('Result (P_7,2, P_7,9, mean): ({:.2f}, {:.2f}, {:.2f} sec)'.format(p, q, total))
 
@@ -168,7 +168,7 @@ if __name__ == '__main__':
         C = compute_fundamental_matrix(E)
         total = mean_execution_time(C, T)
         if p == A.A[7][3]:
-            print('Result (P_8,4, P_8,10, mean): ({:.2f}, {:.2f}, {:.2f} sec) *'.format(p, q, total))
+            print('Result (P_8,4, P_8,10, mean): ({:.2f}, {:.2f}, {:.2f} sec) (original values)'.format(p, q, total))
         else:
             print('Result (P_8,4, P_8,10, mean): ({:.2f}, {:.2f}, {:.2f} sec)'.format(p, q, total))
 
@@ -180,6 +180,48 @@ if __name__ == '__main__':
         C = compute_fundamental_matrix(E)
         total = mean_execution_time(C, T)
         if p == A.A[8][7]:
-            print('Result (P_9,8, P_9,10, mean): ({:.2f}, {:.2f}, {:.2f} sec) *'.format(p, q, total))
+            print('Result (P_9,8, P_9,10, mean): ({:.2f}, {:.2f}, {:.2f} sec) (original values)'.format(p, q, total))
         else:
             print('Result (P_9,8, P_9,10, mean): ({:.2f}, {:.2f}, {:.2f} sec)'.format(p, q, total))
+
+
+    ########################################
+    # Part F
+    ########################################
+    print()
+    print('########################################')
+    print('Part F')
+    print()
+
+    X = T.copy()    # -10%
+    Y = T.copy()    # +10%
+    index = -1
+    widest = 0
+
+    print('Default:', T, '{:.2f} sec'.format(mean_execution_time(C, T)))
+    print()
+
+    for i in range(len(X.A1)):
+        original = X.A1[i]
+        original = Y.A1[i]
+
+        X.A1[i] = X.A1[i] * 0.9
+        Y.A1[i] = Y.A1[i] * 1.1
+
+        lower = mean_execution_time(C, X)
+        upper = mean_execution_time(C, Y)
+        diff = upper - lower
+
+        if diff >= widest:
+            widest = diff
+            index = i
+
+        print(X, '{:.2f} sec'.format(lower))
+        print(Y, '{:.2f} sec'.format(upper))
+        print('Module {:}, Difference {:.2f} sec'.format(i, diff))
+        print()
+
+        X.A1[i] = original
+        Y.A1[i] = original
+
+    print('Most sensitive: Module {:} with a {:.2f} sec difference'.format(index, widest))
