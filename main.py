@@ -97,9 +97,6 @@ def compute_reliability(S):
 if __name__ == '__main__':
     numpy.set_printoptions(precision=5)
 
-    ########################################
-    # Question 1
-    ########################################
     print('########################################')
     print('########################################')
     print('Question 1')
@@ -107,53 +104,36 @@ if __name__ == '__main__':
     print('########################################')
     print()
 
-    ########################################
-    # Part B
-    ########################################
-    # Remove absorbing state A_99
-    M = compute_fundamental_matrix(A)
     print('########################################')
     print('Part B')
+    # Remove absorbing state A_99
+    M = compute_fundamental_matrix(A)
     print('Average number of visits to each module:')
     print(M.A[0])
     print()
 
-
-    ########################################
-    # Part C
-    ########################################
-    total = compute_mean_execution_time(M, T)
     print('########################################')
     print('Part C')
-    print('Mean execution time:')
-    print('{:.2f} sec'.format(total))
+    total = compute_mean_execution_time(M, T)
+    print('Mean execution time: {:.2f} sec'.format(total))
     print()
 
-
-    ########################################
-    # Part D
-    ########################################
+    print('########################################')
+    print('Part D')
     U = numpy.delete(T, 9)
     l1 = M[0, :].A1
     l2 = U.T.A1
 
-    print('########################################')
-    print('Part D')
     print('Execution time per component:')
     for i in range(len(l1)):
         print('Component {:}: {:.2f} sec'.format(i+1, l1[i] * l2[i]))
     print('Component {:}: {:.2f} sec'.format(10, T.A1[9]))
     print()
 
-
-    ########################################
-    # Part E
-    ########################################
-    steps = [(i/20) for i in list(range(2, 19, 1))]
-    n = len(steps)
-
     print('########################################')
     print('Part E')
+    steps = [(i/20) for i in list(range(2, 19, 1))]
+    n = len(steps)
 
     print('P_5,7')
     E = A.copy()
@@ -263,12 +243,8 @@ if __name__ == '__main__':
 
     print()
     print('Transition {:} has the greatest impact with difference {:.4f}'.format(D[diff], diff))
-
-
-    ########################################
-    # Part F
-    ########################################
     print()
+
     print('########################################')
     print('Part F')
     print()
@@ -308,9 +284,6 @@ if __name__ == '__main__':
     print()
 
 
-    ########################################
-    # Question 2
-    ########################################
     print('########################################')
     print('########################################')
     print('Question 2')
