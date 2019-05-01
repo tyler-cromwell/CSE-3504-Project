@@ -150,57 +150,119 @@ if __name__ == '__main__':
     # Part E
     ########################################
     steps = [(i/20) for i in list(range(2, 19, 1))]
+    n = len(steps)
 
     print('########################################')
     print('Part E')
 
     print('P_5,7')
     E = A.copy()
-    for p in steps:
+    first1 = 0
+    last1 = 0
+
+    for i in range(len(steps)):
+        p = steps[i]
         E.A[4][6] = p
         E.A[4][7] = q = 1 - p
+
         M = compute_fundamental_matrix(E)
         total = compute_mean_execution_time(M, T)
+
         if p == A.A[4][6]:
             print('Result (P_5,7, P_5,8, mean): ({:.2f}, {:.2f}, {:.2f} sec) (original values)'.format(p, q, total))
         else:
             print('Result (P_5,7, P_5,8, mean): ({:.2f}, {:.2f}, {:.2f} sec)'.format(p, q, total))
 
+        if i == 0:
+            first1 = total
+        if i == n-1:
+            last1 = total
+
     print('P_7,2')
     E = A.copy()
-    for p in steps:
+    first2 = 0
+    last2 = 0
+
+    for i in range(len(steps)):
+        p = steps[i]
         E.A[6][1] = p
         E.A[6][8] = q = 1 - p
+
         M = compute_fundamental_matrix(E)
         total = compute_mean_execution_time(M, T)
+
         if p == A.A[6][1]:
             print('Result (P_7,2, P_7,9, mean): ({:.2f}, {:.2f}, {:.2f} sec) (original values)'.format(p, q, total))
         else:
             print('Result (P_7,2, P_7,9, mean): ({:.2f}, {:.2f}, {:.2f} sec)'.format(p, q, total))
 
+        if i == 0:
+            first2 = total
+        if i == n-1:
+            last2 = total
+
     print('P_8,4')
     E = A.copy()
-    for p in steps:
+    first3 = 0
+    last3 = 0
+
+    for i in range(len(steps)):
+        p = steps[i]
         E.A[7][3] = p
         E.A[7][9] = q = 1 - p
+
         M = compute_fundamental_matrix(E)
         total = compute_mean_execution_time(M, T)
+
         if p == A.A[7][3]:
             print('Result (P_8,4, P_8,10, mean): ({:.2f}, {:.2f}, {:.2f} sec) (original values)'.format(p, q, total))
         else:
             print('Result (P_8,4, P_8,10, mean): ({:.2f}, {:.2f}, {:.2f} sec)'.format(p, q, total))
 
+        if i == 0:
+            first3 = total
+        if i == n-1:
+            last3 = total
+
     print('P_9,8')
     E = A.copy()
-    for p in steps:
+    first4 = 0
+    last4 = 0
+
+    for i in range(len(steps)):
+        p = steps[i]
         E.A[8][7] = p
         E.A[8][9] = q = 1 - p
+
         M = compute_fundamental_matrix(E)
         total = compute_mean_execution_time(M, T)
+
         if p == A.A[8][7]:
             print('Result (P_9,8, P_9,10, mean): ({:.2f}, {:.2f}, {:.2f} sec) (original values)'.format(p, q, total))
         else:
             print('Result (P_9,8, P_9,10, mean): ({:.2f}, {:.2f}, {:.2f} sec)'.format(p, q, total))
+
+        if i == 0:
+            first4 = total
+        if i == n-1:
+            last4 = total
+
+    D = {
+        abs(first1 - last1) : 'P_5,7',
+        abs(first2 - last2) : 'P_7,2',
+        abs(first3 - last3) : 'P_8,4',
+        abs(first4 - last4) : 'P_9,8'
+    }
+
+    diff = max(
+        abs(first1 - last1),
+        abs(first2 - last2),
+        abs(first3 - last3),
+        abs(first4 - last4)
+    )
+
+    print()
+    print('Transition {:} has the greatest impact with difference {:.4f}'.format(D[diff], diff))
 
 
     ########################################
