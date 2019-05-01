@@ -54,14 +54,16 @@ def I(n=1):
     return numpy.matrix(I)
 
 
+# Generate an identity vector of size 1xn
 def iv(n=1):
     return numpy.matrix([1] * n)
 
 
-def compute_fundamental_matrix(matrix):
+# Specifically for Question 1
+def compute_fundamental_matrix(A):
     Q = numpy.delete(
         numpy.delete(
-            matrix,
+            A,
             9,
             Axis.ROW.value
         ),
@@ -73,13 +75,23 @@ def compute_fundamental_matrix(matrix):
     return numpy.linalg.inv(I(int(math.sqrt(Q.size))) - Q)
 
 
-def mean_execution_time(C, T):
+def compute_mean_execution_time(C, T):
     # Multiply time vector with the first row of the fundamental matrix
     U = numpy.delete(T, 9)
     R = (C[0, :] * U.T).A1
 
     # Compute total average completion time
     return T.A1[9] + R[0]
+
+
+def compute_steady_state(B, cols):
+    # Apply normalization condition
+    return numpy.full((1, cols), 1 / cols) * B
+
+
+def compute_reliability(S):
+    Z = numpy.matrix([(0.85 + 0.01*(i+1)) for i in range(10)])
+    return (Z * S.T).A1.tolist()[0]
 
 
 if __name__ == '__main__':
@@ -110,7 +122,7 @@ if __name__ == '__main__':
     ########################################
     # Part C
     ########################################
-    total = mean_execution_time(M, T)
+    total = compute_mean_execution_time(M, T)
     print('########################################')
     print('Part C')
     print('Mean execution time:')
@@ -148,7 +160,7 @@ if __name__ == '__main__':
         E.A[4][6] = p
         E.A[4][7] = q = 1 - p
         M = compute_fundamental_matrix(E)
-        total = mean_execution_time(M, T)
+        total = compute_mean_execution_time(M, T)
         if p == A.A[4][6]:
             print('Result (P_5,7, P_5,8, mean): ({:.2f}, {:.2f}, {:.2f} sec) (original values)'.format(p, q, total))
         else:
@@ -160,7 +172,7 @@ if __name__ == '__main__':
         E.A[6][1] = p
         E.A[6][8] = q = 1 - p
         M = compute_fundamental_matrix(E)
-        total = mean_execution_time(M, T)
+        total = compute_mean_execution_time(M, T)
         if p == A.A[6][1]:
             print('Result (P_7,2, P_7,9, mean): ({:.2f}, {:.2f}, {:.2f} sec) (original values)'.format(p, q, total))
         else:
@@ -172,7 +184,7 @@ if __name__ == '__main__':
         E.A[7][3] = p
         E.A[7][9] = q = 1 - p
         M = compute_fundamental_matrix(E)
-        total = mean_execution_time(M, T)
+        total = compute_mean_execution_time(M, T)
         if p == A.A[7][3]:
             print('Result (P_8,4, P_8,10, mean): ({:.2f}, {:.2f}, {:.2f} sec) (original values)'.format(p, q, total))
         else:
@@ -184,7 +196,7 @@ if __name__ == '__main__':
         E.A[8][7] = p
         E.A[8][9] = q = 1 - p
         M = compute_fundamental_matrix(E)
-        total = mean_execution_time(M, T)
+        total = compute_mean_execution_time(M, T)
         if p == A.A[8][7]:
             print('Result (P_9,8, P_9,10, mean): ({:.2f}, {:.2f}, {:.2f} sec) (original values)'.format(p, q, total))
         else:
@@ -204,7 +216,7 @@ if __name__ == '__main__':
     index = -1
     widest = 0
 
-    print('Default:', T, '{:.2f} sec'.format(mean_execution_time(M, T)))
+    print('Default:', T, '{:.2f} sec'.format(compute_mean_execution_time(M, T)))
     print()
 
     for i in range(len(X.A1)):
@@ -214,8 +226,8 @@ if __name__ == '__main__':
         X.A1[i] = X.A1[i] * 0.9
         Y.A1[i] = Y.A1[i] * 1.1
 
-        lower = mean_execution_time(M, X)
-        upper = mean_execution_time(M, Y)
+        lower = compute_mean_execution_time(M, X)
+        upper = compute_mean_execution_time(M, Y)
         diff = upper - lower
 
         if diff >= widest:
@@ -251,17 +263,126 @@ if __name__ == '__main__':
 
     print('########################################')
     print('Part A')
-    S = numpy.full((1, 10), 0.1) * B
-    print('Steady state probabilities:', S.A1)
+    S = compute_steady_state(B, 10)
+    print('Steady State:', numpy.around(S.A1, 4).tolist())
     print()
 
     print('########################################')
     print('Part B')
-
-    Z = [-1] * 10
-    for i in range(len(Z)):
-        Z[i] = 0.85 + 0.01*(i+1)
-    Z = numpy.matrix(Z)
-
-    print('Reliability: ', (Z * S.T).A1)
+    r = compute_reliability(S)
+    print('Reliability: {:.5f}'.format(r))
     print()
+
+    print('########################################')
+    print('Part C')
+    print()
+    n = len(steps)
+
+    print('P_5,7')
+    Q = B.copy()
+    first1 = 0
+    last1 = 0
+
+    for i in range(n):
+        p = steps[i]
+        Q.A[4][6] = p
+        Q.A[4][7] = q = 1 - p
+
+        S = compute_steady_state(Q, 10)
+        r = compute_reliability(S)
+
+        if p == B.A[4][6]:
+            print('Result (P_5,7, P_5,8, reliability): ({:.2f}, {:.2f}, {:.4f}) (original values)'.format(p, q, r))
+        else:
+            print('Result (P_5,7, P_5,8, reliability): ({:.2f}, {:.2f}, {:.4f})'.format(p, q, r))
+
+        if i == 0:
+            first1 = r
+        if i == n-1:
+            last1 = r
+
+    print('P_7,2')
+    Q = B.copy()
+    first2 = 0
+    last2 = 0
+
+    for i in range(n):
+        p = steps[i]
+        Q.A[6][1] = p
+        Q.A[6][8] = q = 1 - p
+
+        S = compute_steady_state(Q, 10)
+        r = compute_reliability(S)
+
+        if p == B.A[6][1]:
+            print('Result (P_7,2, P_7,9, reliability): ({:.2f}, {:.2f}, {:.4f}) (original values)'.format(p, q, r))
+        else:
+            print('Result (P_7,2, P_7,9, reliability): ({:.2f}, {:.2f}, {:.4f})'.format(p, q, r))
+
+        if i == 0:
+            first2 = r
+        if i == n-1:
+            last2 = r
+
+    print('P_8,4')
+    Q = B.copy()
+    first3 = 0
+    last3 = 0
+
+    for i in range(n):
+        p = steps[i]
+        Q.A[7][3] = p
+        Q.A[7][9] = q = 1 - p
+
+        S = compute_steady_state(Q, 10)
+        r = compute_reliability(S)
+
+        if p == B.A[7][3]:
+            print('Result (P_8,4, P_8,10, reliability): ({:.2f}, {:.2f}, {:.4f}) (original values)'.format(p, q, r))
+        else:
+            print('Result (P_8,4, P_8,10, reliability): ({:.2f}, {:.2f}, {:.4f})'.format(p, q, r))
+
+        if i == 0:
+            first3 = r
+        if i == n-1:
+            last3 = r
+
+    print('P_9,8')
+    Q = B.copy()
+    first4 = 0
+    last4 = 0
+
+    for i in range(n):
+        p = steps[i]
+        Q.A[8][7] = p
+        Q.A[8][9] = q = 1 - p
+
+        S = compute_steady_state(Q, 10)
+        r = compute_reliability(S)
+
+        if p == B.A[8][7]:
+            print('Result (P_9,8, P_9,10, reliability): ({:.2f}, {:.2f}, {:.4f}) (original values)'.format(p, q, r))
+        else:
+            print('Result (P_9,8, P_9,10, reliability): ({:.2f}, {:.2f}, {:.4f})'.format(p, q, r))
+
+        if i == 0:
+            first4 = r
+        if i == n-1:
+            last4 = r
+
+    D = {
+        abs(first1 - last1) : 'P_5,7',
+        abs(first2 - last2) : 'P_7,2',
+        abs(first3 - last3) : 'P_8,4',
+        abs(first4 - last4) : 'P_9,8'
+    }
+
+    diff = max(
+        abs(first1 - last1),
+        abs(first2 - last2),
+        abs(first3 - last3),
+        abs(first4 - last4)
+    )
+
+    print()
+    print('Transition {:} has the greatest impact with difference {:.4f}'.format(D[diff], diff))
